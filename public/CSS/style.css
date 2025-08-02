@@ -1,0 +1,107 @@
+body {
+    font-family: "Lora", serif !important;
+    display : flex !important;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    flex : 1;
+}
+.navbar {
+    height: 5rem;
+    background-color: white;
+}
+
+.fa-compass {
+    color : #fe424d;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    color : black !important;
+}
+
+.f-info {
+    width : 100%;
+    text-align: center;
+    background-color: #ebebeb;
+    display: flex;
+    flex-wrap: wrap ;
+    justify-content: center;
+    align-items: center;
+    height : 6rem;
+}
+
+.f-info-socials {
+    width: 100%;
+}
+
+.f-info-socials i{
+    font-size: 1.5rem;
+    margin-right : 1.2rem;
+}
+
+.f-info-links {
+    width: 100%;
+}
+.f-info-links a {
+    text-decoration : none;
+    color : black;
+}
+
+.f-info-links a:hover {
+    text-decoration: underline;
+}
+
+.card {
+    border : none !important;
+    margin-bottom: 1.5rem;
+}
+
+.card-img-top {
+    border-radius: 1rem !important;
+    width : 100% !important;
+    object-fit: cover !important;
+}
+
+.card-body{
+    padding : 0px !important;
+}
+ .listing-link {
+    text-decoration : none;
+    color : black;
+}
+
+.card-img-overlay{
+    opacity : 0;
+}
+
+.card-img-overlay:hover{
+    opacity : 0.4;
+      background-color: white;
+}
+
+.add-btn {
+    background-color: #fe424d !important;
+    border : none;
+}
+
+/* Review  */
+.reviews {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: baseline;
+}
+.review-card {
+    border : 2px solid black !important;
+    margin-right: 3.5rem;
+    padding: 1rem;
+}
+
+.review-icon {
+    display: flex;
+    justify-content: space-between;
+}

@@ -1,0 +1,93 @@
+   <% layout("/layouts/boilerplate.ejs") %> 
+  <script> 
+  const allListings = <%- JSON.stringify(allListings) %> ;
+     const coordinates = <%- JSON.stringify(allListings[0].geoCoordinates.coordinates) %> ; 
+     </script>
+   <style>
+    #filters{
+      display : flex;
+      flex-wrap: wrap;
+      line-height: 1rem;
+        align-items: center;
+    }
+    .filter {
+      margin-top: 10px;
+         padding: 8px;
+         font-size: 0.9rem;
+           opacity: 0.7;
+    }
+    .filter i{
+      margin: 0px auto;
+    }
+      .filter:hover {
+      opacity: 1;
+      cursor: pointer;
+    }
+  .toggle {
+    display: flex;
+    align-items: center;
+      border: 1px solid grey;
+      border-radius: 5px;
+      padding: 10px;
+      line-height: 8px;
+      position: absolute;
+      right: 9rem;
+    } 
+    @media(max-width : 1050px){
+    .toggle {
+      display: none;
+    }
+    .filter {
+      margin-top: 2px;
+      padding: 5px;
+    } 
+    }
+   </style>
+    <body>
+       <div id="filters" >
+        <div class="filter ">
+          <div><i class="fa-solid fa-tractor"></i></div>
+          <p>Farms</p>
+        </div>
+         <div class="filter">
+          <div><i class="fa-solid fa-fire"></i></div>
+          <p>Trending</p>
+        </div>
+         <div class="filter">
+          <div><i class="fa-solid fa-person-swimming"></i></div>
+          <p>Pools</p>
+        </div>
+         <div class="filter">
+          <div><i class="fa-solid fa-mountain"></i></div>
+          <p>Mountain</p>
+        </div>
+         <div class="filter">
+          <div><i class="fa-solid fa-mountain-city"></i></div>
+          <p>Mountain City</p>
+        </div>
+         <div class="filter">
+          <div><i class="fa-solid fa-snowflake"></i></div>
+          <p>Snow City</p>
+        </div>
+        <div class="toggle">
+    <div class="form-check form-switch form-check-reverse">
+  <input class="form-check-input" type="checkbox" id="switchCheckReverse">
+  <label class="form-check-label mt-1" for="switchCheckReverse" >Total Price including tax</label>
+</div>
+</div>
+       </div>
+        <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+   <% for(Listing of allListings){%>
+        <div class="card" >
+            <a href="/listings/<%=Listing._id%>" class="listing-link"> 
+  <img src= '<%= Listing.image.url%>' class="card-img-top" alt="Listing_img" height="250rem">
+     <div class="card-img-overlay">WanderLust</div>
+  <div class="card-body">
+    <p class="card-text"><b><%= Listing.title %> </b><br>
+      &#8377;<span class="price"><%= Listing.price.toLocaleString("en-IN") %></span>/night &nbsp; <br> 
+    </p>
+  </div>
+  </a>
+</div>
+ <%}%> 
+  </div>

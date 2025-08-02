@@ -1,0 +1,47 @@
+  <% layout("/layouts/boilerplate.ejs") %>
+    <body>
+        <br>
+         <div class="row">
+            <div class="col-8 offset-2">
+ <!-- Multer is a node.js middleware for handling multipart/form-data, which is primarily used for 
+  uploading files.It is written on top of busboy for maximum efficiency. -->
+     <h2> Crete a new Listing </h2>
+     <form method="POST" action = "/listings" novalidate class="needs-validation" enctype="multipart/form-data">
+       <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input name="listing[title]" placeholder="Add a catchy Title " type = "text" class="form-control" id="title" required>
+      <div class="valid-feedback">Title looks Good!</div> 
+      <div class="invalid-feedback">Title should be valid</div> 
+      </div>
+       <div class="mb-3">
+         <label for="description" class="form-label">Description</label>
+           <textarea name="listing[description]" placeholder="Enter Description" class="form-control" required></textarea>
+      <div class="invalid-feedback">Description should be short and valid</div> 
+          </div>
+      <div class="mb-3">
+         <label for="image" class="form-label">Image Link</label>
+         <input name="listing[image]" placeholder="Enter Image Url/link" class="form-control" type="file" required>
+       </div>
+       <div class="row">
+         <div class="mb-3 col-md-4">
+         <label for="price" class="form-label ">Price</label>
+          <input name="listing[price]" placeholder="1200"  class="form-control" type="number"required>
+      <div class="invalid-feedback">Price should be valid</div> 
+        </div>
+        <div class="mb-3 col-md-8">
+         <label for="country" class="form-label">Country</label>
+           <input name="listing[country]" placeholder="India" type = "text" class="form-control" required>
+      <div class="invalid-feedback">Country should be valid</div> 
+          </div>
+       </div>
+       <div class="mb-3">
+         <label for="Location" class="form-label">Location</label>
+             <input name="listing[location]" placeholder="Jaipur,Rajasthan" type = "text" class="form-control" required>
+      <div class="invalid-feedback">Location should be valid</div> 
+            </div>
+     <button class="btn btn-dark mb-3 add-btn" >Add</button>
+     <br>
+     </div>
+     </div>
+     </form>
+    </body>
