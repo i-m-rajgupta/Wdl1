@@ -56,7 +56,7 @@ module.exports.post = async (req, res, next) => {
 
     const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(storedAddress)}`, {
       headers: {
-        'User-Agent': WanderLust/1.0' // Required by Nominatim usage policy
+        'User-Agent': 'WanderLust/1.0 (contact : neeleshgupta32154@gmail.com)' // Required by Nominatim usage policy
       }
     });
 
