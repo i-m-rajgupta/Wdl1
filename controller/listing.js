@@ -95,36 +95,51 @@ module.exports.edit = async (req,res,next)=>{
     res.render("./listings/edit.ejs",{data,originalUrl});
      }
 };
-module.exports.update = async (req,res)=>{
+module.exports.update = async (req,res,next)=>{
     let {id} = req.params;
     let listing = req.body.listing;
     let data = await Listing.findById(id);
+    
+    if(!data){
+        req.flash("error","Listing you requested for doesn't exist.");
+        return res.redirect("/listings");
+    }
+    
     if(listing.location != data.location || listing.country != data.country){
         const storedAddress = listing.location +","+ listing.country;
-    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(storedAddress)}`)
-    .then(response => response.json())
-    .then(res => {
-     listing.geoCoordinates = {
-      coordinates : [res[0].lat,res[0].lon],
-    }});
-      data = await Listing.findByIdAndUpdate(id,{...listing},{new : true});
-     if(req.file){
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(storedAddress)}`);
+            const geoData = await response.json();
+            if(geoData.length > 0) {
+                listing.geoCoordinates = {
+                    coordinates : [geoData[0].lat,geoData[0].lon],
+                };
+            }
+        } catch(error) {
+            console.log("Geocoding error:", error);
+        }
+    }
+    
+    data = await Listing.findByIdAndUpdate(id,{...listing},{new : true});
+    
+    if(req.file){
         deleteImage(data.image.filename);
         data["image"] = {
             url : req.file.path,
             filename : req.file.filename,
         }
         await data.save();
-     }
+    }
 
-     if(!data){
-       return next(new ExpressError(400,"Bad Requests"));
-     }
-        req.flash("success"," Listing Updated successfully ");
-        res.redirect(`/listings/${id}`);
-}};
+    if(!data){
+        return next(new ExpressError(400,"Bad Requests"));
+    }
+    
+    req.flash("success"," Listing Updated successfully ");
+    res.redirect(`/listings/${id}`);
+};
 
-module.exports.delete = async (req,res)=>{
+module.exports.delete = async (req,res,next)=>{
     let {id} = req.params;
    let data = await Listing.findByIdAndDelete(id);
      deleteImage(data.image.filename);
