@@ -44,21 +44,25 @@ module.exports.post = async (req,res,next)=>{
     const storedAddress = req.body.listing.location +","+ req.body.listing.country;
     console.log(storedAddress);
   // Geocode using Nominatim API (OpenStreetMap)
+    try{
   fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(storedAddress)}`)
     .then(response => response.json())
     .then(dataMap => {
       if (dataMap.length > 0) {
     console.log(dataMap);
     let coordinates = [dataMap[0].lat,dataMap[0].lon];
+          newListing["geoCoordinates"] = {
+         coordinates : coordinates,
+    }
+      }catch(err){
+          console.log(err);
+      }
     let url = req.file.path;
     let filename = req.file.filename ;
     let newListing = req.body.listing ;
     newListing["image"] = {
         url : url,
         filename : filename,
-    }
-    newListing["geoCoordinates"] = {
-         coordinates : coordinates,
     }
     let data = new Listing(newListing);
     data.owner = req.user._id ;
