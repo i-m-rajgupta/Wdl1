@@ -41,6 +41,13 @@ module.exports.new = (req,res)=>{
 };
 
 module.exports.post = async (req,res,next)=>{
+     let url = req.file.path;
+    let filename = req.file.filename ;
+    let newListing = req.body.listing ;
+    newListing["image"] = {
+        url : url,
+        filename : filename,
+    }
     const storedAddress = req.body.listing.location +","+ req.body.listing.country;
     console.log(storedAddress);
   // Geocode using Nominatim API (OpenStreetMap)
@@ -54,16 +61,11 @@ module.exports.post = async (req,res,next)=>{
           newListing["geoCoordinates"] = {
          coordinates : coordinates,
     }
-      }catch(err){
-          console.log(err);
+      }}
+      }catch(error){
+          console.log(error);
       }
-    let url = req.file.path;
-    let filename = req.file.filename ;
-    let newListing = req.body.listing ;
-    newListing["image"] = {
-        url : url,
-        filename : filename,
-    }
+   
     let data = new Listing(newListing);
     data.owner = req.user._id ;
         let listing =  data.save().then(()=>{
