@@ -40,44 +40,52 @@ module.exports.new = (req,res)=>{
     res.render("./listings/new.ejs");
 };
 
-module.exports.post = async (req,res,next)=>{
-     let url = req.file.path;
-    let filename = req.file.filename ;
-    let newListing = req.body.listing ;
-    newListing["image"] = {
-        url : url,
-        filename : filename,
-    }
-    const storedAddress = req.body.listing.location +","+ req.body.listing.country;
-    console.log(storedAddress);
-  // Geocode using Nominatim API (OpenStreetMap)
-    try{
-  fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(storedAddress)}`)
-    .then(response => response.json())
-    .then(dataMap => {
-      if (dataMap.length > 0) {
-    console.log(dataMap);
-    let coordinates = [dataMap[0].lat,dataMap[0].lon];
-          newListing["geoCoordinates"] = {
-         coordinates : coordinates,
-    }
-      }}
-      }catch(error){
-          console.log(error);
+module.exports.post = async (req, res, next) => {
+  try {
+    let url = req.file.path;
+    let filename = req.file.filename;
+    let newListing = req.body.listing;
+
+    newListing.image = {
+      url,
+      filename
+    };
+
+    const storedAddress = `${req.body.listing.location}, ${req.body.listing.country}`;
+    console.log("Stored address:", storedAddress);
+
+    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(storedAddress)}`, {
+      headers: {
+        'User-Agent': WanderLust/1.0' // Required by Nominatim usage policy
       }
-   
-    let data = new Listing(newListing);
-    data.owner = req.user._id ;
-        let listing =  data.save().then(()=>{
-         console.log(listing);
-        req.flash("success"," New Listing added successfully ");
-        res.redirect("/listings");
-        })
-      }else{
-  req.flash("error"," Try again with precise location. ");
-        res.redirect("/listings");
-    }});
+    });
+
+    const dataMap = await response.json();
+
+    if (dataMap.length > 0) {
+      const coordinates = [dataMap[0].lat, dataMap[0].lon];
+      newListing.geoCoordinates = {
+        coordinates
+      };
+    } else {
+      req.flash("error", "Try again with a more precise location.");
+      return res.redirect("/listings");
+    }
+
+    const data = new Listing(newListing);
+    data.owner = req.user._id;
+    await data.save();
+
+    req.flash("success", "New Listing added successfully.");
+    res.redirect("/listings");
+
+  } catch (error) {
+    console.error(error);
+    req.flash("error", "Something went wrong.");
+    res.redirect("/listings");
+  }
 };
+
 
 module.exports.show = async (req,res)=>{
     let {id} = req.params;
