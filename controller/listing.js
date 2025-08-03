@@ -99,12 +99,11 @@ module.exports.update = async (req,res)=>{
     let {id} = req.params;
     let listing = req.body.listing;
     let data = await Listing.findById(id);
-    if(listing.location != data.location || listing.country != country){
+    if(listing.location != data.location || listing.country != data.country){
         const storedAddress = listing.location +","+ listing.country;
     fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(storedAddress)}`)
     .then(response => response.json())
     .then(res => {
-       console.log([res[0].lat,res[0].lon]);
      listing.geoCoordinates = {
       coordinates : [res[0].lat,res[0].lon],
     }});
