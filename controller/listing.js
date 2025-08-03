@@ -40,7 +40,7 @@ module.exports.new = (req,res)=>{
     res.render("./listings/new.ejs");
 };
 
-module.exports.post = async (req,res)=>{
+module.exports.post = async (req,res,next)=>{
     const storedAddress = req.body.listing.location +","+ req.body.listing.country;
     console.log(storedAddress);
   // Geocode using Nominatim API (OpenStreetMap)
