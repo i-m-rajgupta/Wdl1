@@ -109,49 +109,65 @@ module.exports.edit = async (req,res,next)=>{
     res.render("./listings/edit.ejs",{data,originalUrl});
      }
 };
-module.exports.update = async (req,res,next)=>{
-    let {id} = req.params;
-    let listing = req.body.listing;
+module.exports.update = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const listing = req.body.listing;
+    
     let data = await Listing.findById(id);
-    
-    if(!data){
-        req.flash("error","Listing you requested for doesn't exist.");
-        return res.redirect("/listings");
-    }
-    
-    if(listing.location != data.location || listing.country != data.country){
-        const storedAddress = listing.location +","+ listing.country;
-        try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(storedAddress)}`);
-            const geoData = await response.json();
-            if(geoData.length > 0) {
-                listing.geoCoordinates = {
-                    coordinates : [geoData[0].lat,geoData[0].lon],
-                };
-            }
-        } catch(error) {
-            console.log("Geocoding error:", error);
-        }
-    }
-    
-    data = await Listing.findByIdAndUpdate(id,{...listing},{new : true});
-    
-    if(req.file){
-        deleteImage(data.image.filename);
-        data["image"] = {
-            url : req.file.path,
-            filename : req.file.filename,
-        }
-        await data.save();
+    if (!data) {
+      req.flash("error", "Listing you requested for doesn't exist.");
+      return res.redirect("/listings");
     }
 
-    if(!data){
-        return next(new ExpressError(400,"Bad Requests"));
+    // If location or country changed, re-geocode
+    if (listing.location !== data.location || listing.country !== data.country) {
+      const storedAddress = `${listing.location}, ${listing.country}`;
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(storedAddress)}`,
+          {
+            headers: {
+              'User-Agent': 'GeoListingApp/1.0 (rajgupta.dev@gmail.com)' // Use your real app name/email
+            }
+          }
+        );
+
+        const geoData = await response.json();
+        if (geoData.length > 0) {
+          listing.geoCoordinates = {
+            coordinates: [Number(geoData[0].lat), Number(geoData[0].lon)]
+          };
+        }
+      } catch (geoErr) {
+        console.error("Geocoding error:", geoErr);
+        req.flash("error", "Could not update geolocation info.");
+      }
     }
-    
-    req.flash("success"," Listing Updated successfully ");
+
+    // Update listing (excluding image)
+    data = await Listing.findByIdAndUpdate(id, { ...listing }, { new: true });
+
+    if (req.file) {
+      // Delete old image from cloud (if using Cloudinary or similar)
+      deleteImage(data.image.filename);
+
+      // Replace with new image
+      data.image = {
+        url: req.file.path,
+        filename: req.file.filename
+      };
+
+      await data.save(); // Save image update
+    }
+
+    req.flash("success", "Listing updated successfully.");
     res.redirect(`/listings/${id}`);
+  } catch (err) {
+    next(err); // Let Express handle the error
+  }
 };
+
 
 module.exports.delete = async (req,res,next)=>{
     let {id} = req.params;
