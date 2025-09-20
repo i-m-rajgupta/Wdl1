@@ -90,6 +90,35 @@ app.use((req,res,next)=>{
 // })
 
 app.get("/",(req,res)=>{
+   res.redirect("/listings");
+});
+
+app.post("/search",async(req,res,next)=>{
+    const query = req.body.search;
+    if(!query){
+        res.redirect("/listings")
+    }
+      try {
+    const allListings = await Listing.find({
+          $or: [
+             { country: { $regex: query, $options: "i" } },
+               { location: { $regex: query, $options: "i" } },
+        { title : { $regex: query, $options: "i" } },
+      ]
+    })
+    if(allListings.length>0){
+     res.render("./listings/index.ejs",{allListings});
+    }else{
+        req.flash("error","No Results found for this query !!");
+        res.redirect("/listings");
+    }
+} catch (err) {
+   req.flash("error","No Results found for this query !!");
+   res.redirect("/listings");
+  }
+});
+
+app.get("/",(req,res)=>{
     res.redirect("/listings");
 });
 
@@ -126,7 +155,7 @@ app.use((err,req,res,next)=>{
     res.status(statusCode).render("error.ejs",{message});
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 app.listen(port,(req,res)=>{
     console.log("App is listening..");
 });
