@@ -81,9 +81,11 @@
             <div class="card-body">
                <div class="review-icon">
            <p class="card-title mb-2"><b>@<%= review.author.username %></b></p>
+             <% if(currUser && review.author._id.equals(currUser._id)){ %>
            <form method = "post"action="/listings/<%= data._id %>/reviews/<%= review._id %>?_method=DELETE">
             <button><i class="fa-regular fa-trash-can"></i></button>
            </form>
+                  <% } %>
            </div>
            <hr>
            <p class="card-text starability-result" data-rating=<%=review.rating%>></p>
